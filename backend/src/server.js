@@ -1,3 +1,4 @@
+// src/server.js
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
@@ -5,6 +6,7 @@ import cors from "cors";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/auth.js";
 import protectedRoutes from "./routes/protected.js";
+import teachersRoutes from "./routes/teachers.js";
 
 const app = express();
 app.use(cors());
@@ -16,9 +18,10 @@ await connectDB(process.env.MONGO_URI);
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api", protectedRoutes);
+app.use("/api/teachers", teachersRoutes);
 
 // basic root
-app.get("/", (req, res) => res.send("lingoConnect backend is running"));
+app.get("/", (req, res) => res.send("Lingua-Hub backend is running"));
 
 // start
 const PORT = process.env.PORT || 5000;
