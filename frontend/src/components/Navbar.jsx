@@ -28,7 +28,7 @@ export default function Navbar() {
               letterSpacing: 0.5,
             }}
           >
-            LingoConnect
+            Lingua - Hub
           </Typography>
         </Box>
 
