@@ -37,7 +37,7 @@ export default function Navbar() {
           <Button color="inherit" component={Link} to="/">
             Početna
           </Button>
-          <Button color="inherit" component={Link} to="/search">
+          <Button color="inherit" component={Link} to="/teachers">
             Pronađi učitelja
           </Button>
           <Button color="inherit" component={Link} to="/about">
