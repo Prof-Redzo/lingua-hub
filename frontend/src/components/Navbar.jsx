@@ -88,7 +88,7 @@ export default function Navbar() {
           ) : (
             <>
               <Typography sx={{ fontSize: 14, mr: 1 }}>
-                Prijavljen: <strong>{user.email}</strong>
+                Prijavljen: <strong>{user.name}</strong>
               </Typography>
 
               <Button variant="outlined" color="inherit" onClick={handleLogout}>
