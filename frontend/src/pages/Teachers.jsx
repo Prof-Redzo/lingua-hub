@@ -12,6 +12,7 @@ import {
   TextField,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { Link } from "react-router-dom";
 
 export default function Teachers() {
   const [query, setQuery] = React.useState("");
@@ -86,7 +87,9 @@ export default function Teachers() {
         {filtered.map((t) => (
           <Grid item xs={12} sm={6} md={4} key={t._id}>
             <Card>
-              <CardContent sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <CardContent
+                sx={{ display: "flex", alignItems: "center", gap: 2 }}
+              >
                 <Avatar sx={{ bgcolor: "primary.main" }}>{t.name[0]}</Avatar>
                 <Box>
                   <Typography variant="h6">{t.name}</Typography>
@@ -98,11 +101,24 @@ export default function Teachers() {
                   </Typography>
                 </Box>
               </CardContent>
+
               <CardActions sx={{ justifyContent: "space-between", px: 2 }}>
                 <Typography fontWeight="bold">€{t.hourlyRate}/h</Typography>
-                <Button variant="outlined" color="primary">
-                  Kontaktiraj
-                </Button>
+
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    component={Link}
+                    to={`/teachers/${t._id}`}
+                  >
+                    Detalji
+                  </Button>
+
+                  <Button variant="contained" color="secondary">
+                    Kontaktiraj
+                  </Button>
+                </Box>
               </CardActions>
             </Card>
           </Grid>

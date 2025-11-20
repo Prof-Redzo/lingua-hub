@@ -7,6 +7,7 @@ import Register from "./pages/Register.jsx";
 import Teachers from "./pages/Teachers.jsx";
 import About from "./pages/AboutPage.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
+import TeacherProfile from "./pages/TeacherProfile.jsx";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/teachers" element={<Teachers />} />
         <Route path="/about" element={<About />} />
         <Route path="/student" element={<StudentDashboard />} /> 
+        <Route path="/teachers/:id" element={<TeacherProfile />} />
       </Routes>
     </Router>
   );

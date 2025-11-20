@@ -7,11 +7,10 @@ const router = express.Router();
 
 /**
  * GET /api/teachers
- * Vrati listu svih učitelja sa korisničkim podacima (join)
  */
 router.get("/", async (req, res) => {
   try {
-    const teachers = await TeacherProfile.find().populate("user", "name email");
+    const teachers = await TeacherProfile.find().populate("user", "name email username");
     res.json({ teachers });
   } catch (err) {
     console.error(err);
@@ -21,12 +20,14 @@ router.get("/", async (req, res) => {
 
 /**
  * GET /api/teachers/:id
- * Vrati jednog učitelja po id-u profila
  */
 router.get("/:id", async (req, res) => {
   try {
-    const teacher = await TeacherProfile.findById(req.params.id).populate("user", "name email");
+    const teacher = await TeacherProfile.findById(req.params.id)
+      .populate("user", "name email username");
+
     if (!teacher) return res.status(404).json({ message: "Teacher not found" });
+
     res.json({ teacher });
   } catch (err) {
     console.error(err);
@@ -35,13 +36,31 @@ router.get("/:id", async (req, res) => {
 });
 
 /**
+ * GET /api/teachers/user/:userId
+ */
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const teacher = await TeacherProfile.findOne({ user: req.params.userId })
+      .populate("user", "name email username");
+
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher profile not found" });
+    }
+
+    res.json({ teacher });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+/**
  * POST /api/teachers
- * Kreira teacher profile - protected (korisnik mora biti ulogovan)
+ * teacher profile - protected 
  * Body: { languages: [..], bio, hourlyRate, availability }
  */
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    // req.user dolazi iz authMiddleware (token payload)
     const userId = req.user.id;
     const { languages = [], bio = "", hourlyRate = 0, availability = [] } = req.body;
 
