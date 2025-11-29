@@ -1,87 +1,49 @@
 import express from "express";
-import TeacherProfile from "../models/TeacherProfile.js";
-import User from "../models/User.js";
-import { authMiddleware } from "../middleware/auth.js";
 
 const router = express.Router();
 
-/**
- * GET /api/teachers
- */
-router.get("/", async (req, res) => {
-  try {
-    const teachers = await TeacherProfile.find().populate("user", "name email username");
-    res.json({ teachers });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+const teachers = [
+  {
+    _id: "t1",
+    name: "Amira",
+    email: "amira@example.com",
+    subject: "Bosanski & Engleski",
+    experience: 7,
+    bio: "Iskusna učiteljica bosanskog jezika s individualnim pristupom.",
+    languages: ["Bosanski", "Engleski"],
+    hourlyRate: 15
+  },
+  {
+    _id: "t2",
+    name: "Mark",
+    email: "mark@example.com",
+    subject: "Njemački",
+    experience: 5,
+    bio: "Izvorni govornik njemačkog jezika s 5 godina iskustva.",
+    languages: ["Njemački"],
+    hourlyRate: 20
+  },
+  {
+    _id: "t3",
+    name: "Elena",
+    email: "elena@example.com",
+    subject: "Engleski & Njemački",
+    experience: 4,
+    bio: "Diplomirana profesorica engleskog jezika, predaje i početnicima.",
+    languages: ["Engleski", "Njemački"],
+    hourlyRate: 18
+  },
+];
+
+// GET /api/teachers/:id
+router.get("/:id", (req, res) => {
+  const teacher = teachers.find((t) => t._id === req.params.id);
+
+  if (!teacher) {
+    return res.status(404).json({ message: "Teacher not found" });
   }
-});
 
-/**
- * GET /api/teachers/:id
- */
-router.get("/:id", async (req, res) => {
-  try {
-    const teacher = await TeacherProfile.findById(req.params.id)
-      .populate("user", "name email username");
-
-    if (!teacher) return res.status(404).json({ message: "Teacher not found" });
-
-    res.json({ teacher });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-/**
- * GET /api/teachers/user/:userId
- */
-router.get("/user/:userId", async (req, res) => {
-  try {
-    const teacher = await TeacherProfile.findOne({ user: req.params.userId })
-      .populate("user", "name email username");
-
-    if (!teacher) {
-      return res.status(404).json({ message: "Teacher profile not found" });
-    }
-
-    res.json({ teacher });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-/**
- * POST /api/teachers
- * teacher profile - protected 
- * Body: { languages: [..], bio, hourlyRate, availability }
- */
-router.post("/", authMiddleware, async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { languages = [], bio = "", hourlyRate = 0, availability = [] } = req.body;
-
-    // check if profile already exists
-    const existing = await TeacherProfile.findOne({ user: userId });
-    if (existing) return res.status(400).json({ message: "Profile already exists" });
-
-    const profile = new TeacherProfile({
-      user: userId,
-      languages,
-      bio,
-      hourlyRate,
-      availability,
-    });
-
-    await profile.save();
-    res.status(201).json({ profile });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
+  res.json({ teacher });
 });
 
 export default router;

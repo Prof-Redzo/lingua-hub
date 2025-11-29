@@ -13,9 +13,10 @@ export default function TeacherProfile() {
         const res = await api.get(`/api/teachers/${id}`);
         setTeacher(res.data.teacher);
       } catch (err) {
-        console.error(err);
+        console.error("Greška u teacher profilu:", err);
       }
     }
+
     fetchTeacher();
   }, [id]);
 
@@ -32,7 +33,10 @@ export default function TeacherProfile() {
           <Typography>Email: {teacher.email}</Typography>
           <Typography>Predmet: {teacher.subject}</Typography>
           <Typography>Iskustvo: {teacher.experience} godina</Typography>
-          <Typography sx={{ mt: 2 }}>{teacher.bio}</Typography>
+
+          <Typography sx={{ mt: 2 }}>
+            {teacher.bio}
+          </Typography>
         </CardContent>
       </Card>
     </Container>

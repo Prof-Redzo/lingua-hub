@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Container,
   Grid,
@@ -10,13 +10,49 @@ import {
   Button,
   Box,
   TextField,
+  IconButton,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { Link } from "react-router-dom";
 
-export default function Teachers() {
-  const [query, setQuery] = React.useState("");
+// IMPORT MODALS
+import ContactModal from "../components/ContactModal";
+import BookingModal from "../components/BookingModal";
 
+export default function Teachers() {
+  const [query, setQuery] = useState("");
+
+  // -----------------------------
+  // MODAL STATES
+  // -----------------------------
+  const [contactOpen, setContactOpen] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [activeTeacher, setActiveTeacher] = useState(null);
+
+  // -----------------------------
+  // WISHLIST (localStorage)
+  // -----------------------------
+  const [wishlist, setWishlist] = useState(() => {
+    const saved = localStorage.getItem("wishlistTeachers");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const toggleWishlist = (id) => {
+    let updated;
+    if (wishlist.includes(id)) {
+      updated = wishlist.filter((t) => t !== id);
+    } else {
+      updated = [...wishlist, id];
+    }
+    setWishlist(updated);
+    localStorage.setItem("wishlistTeachers", JSON.stringify(updated));
+  };
+
+  // -----------------------------
+  // FAKE TEACHERS DATA
+  // -----------------------------
   const teachers = [
     {
       _id: "t1",
@@ -41,6 +77,9 @@ export default function Teachers() {
     },
   ];
 
+  // -----------------------------
+  // SEARCH FILTER
+  // -----------------------------
   const filtered = teachers.filter(
     (t) =>
       t.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -88,24 +127,41 @@ export default function Teachers() {
           <Grid item xs={12} sm={6} md={4} key={t._id}>
             <Card>
               <CardContent
-                sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
               >
-                <Avatar sx={{ bgcolor: "primary.main" }}>{t.name[0]}</Avatar>
-                <Box>
-                  <Typography variant="h6">{t.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Jezici: {t.languages.join(", ")}
-                  </Typography>
-                  <Typography variant="body2" mt={1}>
-                    {t.bio}
-                  </Typography>
+                {/* LEFT SECTION */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Avatar sx={{ bgcolor: "primary.main" }}>{t.name[0]}</Avatar>
+                  <Box>
+                    <Typography variant="h6">{t.name}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Jezici: {t.languages.join(", ")}
+                    </Typography>
+                    <Typography variant="body2" mt={1}>
+                      {t.bio}
+                    </Typography>
+                  </Box>
                 </Box>
+
+                {/* ❤️ Wishlist Button */}
+                <IconButton onClick={() => toggleWishlist(t._id)}>
+                  {wishlist.includes(t._id) ? (
+                    <FavoriteIcon color="error" />
+                  ) : (
+                    <FavoriteBorderIcon />
+                  )}
+                </IconButton>
               </CardContent>
 
               <CardActions sx={{ justifyContent: "space-between", px: 2 }}>
                 <Typography fontWeight="bold">€{t.hourlyRate}/h</Typography>
 
                 <Box sx={{ display: "flex", gap: 1 }}>
+                  {/* DETALJI */}
                   <Button
                     variant="outlined"
                     color="primary"
@@ -115,8 +171,26 @@ export default function Teachers() {
                     Detalji
                   </Button>
 
-                  <Button variant="contained" color="secondary">
+                  {/* KONTAKT */}
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setActiveTeacher(t);
+                      setContactOpen(true);
+                    }}
+                  >
                     Kontaktiraj
+                  </Button>
+
+                  {/* REZERVACIJA */}
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      setActiveTeacher(t);
+                      setBookingOpen(true);
+                    }}
+                  >
+                    Rezerviši
                   </Button>
                 </Box>
               </CardActions>
@@ -129,6 +203,26 @@ export default function Teachers() {
         <Typography sx={{ mt: 4 }} color="text.secondary">
           Nema rezultata za pretragu „{query}“.
         </Typography>
+      )}
+
+      {/* -----------------------------
+          MODALS
+      ----------------------------- */}
+      {activeTeacher && (
+        <ContactModal
+          open={contactOpen}
+          onClose={() => setContactOpen(false)}
+          teacherProfileId={activeTeacher._id}
+        />
+      )}
+
+      {activeTeacher && (
+        <BookingModal
+          open={bookingOpen}
+          onClose={() => setBookingOpen(false)}
+          teacherProfileId={activeTeacher._id}
+          price={activeTeacher.hourlyRate}
+        />
       )}
     </Container>
   );
